@@ -81,9 +81,9 @@ class GreedySearchDecoder(nn.Module):
         return all_tokens, all_scores
 
 if loadFilename:
-    checkpoint = torch.load(loadFilename)
+    #checkpoint = torch.load(loadFilename)
     # If loading a model trained on GPU to CPU
-    #checkpoint = torch.load(loadFilename, map_location=torch.device('cpu'))
+    checkpoint = torch.load(loadFilename, map_location=torch.device('cpu'))
     encoder_sd = checkpoint['en']
     decoder_sd = checkpoint['de']
     encoder_optimizer_sd = checkpoint['en_opt']
