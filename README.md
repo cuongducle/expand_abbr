@@ -1,5 +1,8 @@
 Môi trường: Python 3.6.9
 
+torch 1.4 : pip install torch torchvision
+flask: pip install flask
+
 Link model:https://drive.google.com/file/d/1AkUc0dMOsokeU8kc46rde44v3rJBYSVQ/view?usp=sharing
 
 Tải mô hình cùng chỗ với thư mục, chạy file val_teacher.py để kiểm tra.
