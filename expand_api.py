@@ -1,6 +1,8 @@
 from flask import request, Flask, jsonify
 from eval_teacher import evaluate
 
+print(evaluate("tôi là người ~ vn # .")[0])
+
 app = Flask(__name__)
 
 @app.route('/expand', methods=["POST"])
