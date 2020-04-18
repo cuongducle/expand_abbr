@@ -29,6 +29,7 @@ batch_size = 100
 MAX_LENGTH = 200
 
 def evaluate(sentence, max_length=MAX_LENGTH):
+    time_start = time.time()
     sentence = normalizeString(sentence)
     sentence = unicodedata.normalize('NFD',sentence)
     indexes_batch = [indexesFromSentence(voc, sentence)]
@@ -44,7 +45,8 @@ def evaluate(sentence, max_length=MAX_LENGTH):
             result += char
         else:
             break
-    return result,score/len(result)
+    time_pred = time.time() - time_start
+    return result,torch.sum(score)/len(result),time_pred
 
 
 class GreedySearchDecoder(nn.Module):
