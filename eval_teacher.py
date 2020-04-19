@@ -3,13 +3,17 @@ import re
 import codecs
 # import torchtext
 # from torchtext.data import Field
-from utils import Voc,get_target,normalizeString,indexesFromSentence
+from utils import Voc,get_target,normalizeString,indexesFromSentence,insert_va,levenshtein,clean_abbr
 from model import EncoderRNN,LuongAttnDecoderRNN
 import torch
 import torch.nn as nn
 import unicodedata
 import time
+import pickle
+import pickle
 
+with open('dic.pkl','rb') as f:
+    dic = pickle.load(f)  
 loadFilename = "300000_checkpoint.tar"
 USE_CUDA = torch.cuda.is_available()
 #device = torch.device("cuda" if USE_CUDA else "cpu")
@@ -110,6 +114,28 @@ decoder = decoder.to(device)
 encoder.eval()
 decoder.eval()
 searcher = GreedySearchDecoder(encoder, decoder)
+
+
+def expand(sentence):
+    sen,abbr,and_pos = clean_abbr(sentence)
+    expand = ''
+    if len(dic[abbr]) == 0:
+        return {"expand": "null", "score": -1,"time": 0}
+    if len(dic[abbr]) == 1:
+        expand = dic[abbr][0]
+        expand = insert_va(expand,and_pos)
+        return {"expand": expand, "score": 0,"time": 0}
+    if len(dic[abbr]) >= 2:
+        pred,score,time = evaluate(sen)
+        for item in dic[abbr]:
+            if levenshtein(item,pred) <=2:
+                expand = item
+        if expand == '':
+            expand = pred
+        expand = insert_va(expand,and_pos)
+        return {"expand": expand, "score": score.item(),"time": time}
+
+# print(expand('cô giáo tôi là ~ th.s #'))
 
 if __name__ == "__main__":
     data = []
