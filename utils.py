@@ -1,12 +1,66 @@
 import re
 import torch
 import itertools
+import unicodedata
+import numpy as np
 
 PAD_token = 0  # Used for padding short sentences
 SOS_token = 1  # Start-of-sentence token
 EOS_token = 2  # End-of-sentence token
 MAX_LENGTH = 100
 MIN_COUNT = 5    # Minimum word count threshold for trimming
+
+def levenshtein(source, target):
+    source = ' ' + unicodedata.normalize('NFD',source)
+    target = unicodedata.normalize('NFD',target)
+    if len(source) < len(target):
+        return levenshtein(target, source)
+    if len(target) == 0:
+        return len(source)
+    source = np.array(tuple(source))
+    target = np.array(tuple(target))
+    previous_row = np.arange(target.size + 1)
+    for s in source:
+        current_row = previous_row + 1
+        current_row[1:] = np.minimum(
+                current_row[1:],
+                np.add(previous_row[:-1], target != s))
+        current_row[1:] = np.minimum(
+                current_row[1:],
+                current_row[0:-1] + 1)
+        previous_row = current_row
+    return previous_row[-1]
+
+def clean_abbr(sentence):
+    sentence = sentence.lower()
+    char_remove = '-.'
+    and_flag = -1
+    start_pos = sentence.find('~')
+    end_pos = sentence.find('#')
+    abbr = sentence[start_pos+2:end_pos-1]
+    for char in char_remove:
+        abbr = abbr.replace(char,'')
+    if '&' in abbr:
+        and_flag = abbr.find('&')
+        abbr = abbr.replace('&','')
+    sen_out = sentence[:start_pos+2] + abbr + sentence[end_pos-1:]
+    return sen_out,abbr,and_flag
+
+def insert_va(expand,pos):
+    if pos <= 0:
+        return expand
+    count = 0
+    expand = ' ' + expand
+    expand = expand.replace('  ',' ')
+    for i in range(len(expand)):
+        if expand[i] == ' ': 
+            count += 1
+        if count == pos+1:
+            pos = i
+            break
+    result = expand[:pos] + ' và ' + expand[pos:]
+    result = result.replace('  ',' ')
+    return result
 
 
 def trimRareWords(voc, pairs, MIN_COUNT):
@@ -183,4 +237,3 @@ def batch2TrainData(voc, pair_batch):
     inp, lengths = inputVar(input_batch, voc)
     output, mask, max_target_len = outputVar(output_batch, voc)
     return inp, lengths, output, mask, max_target_len
-
