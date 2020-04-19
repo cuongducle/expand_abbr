@@ -1,19 +1,18 @@
 from flask import request, Flask, jsonify
-from eval_teacher import evaluate
+from eval_teacher import expand
 from flask import jsonify
+import pickle
 
-evaluate("tôi là người ~ vn # .")[1].item()
+
+expand("tôi là người ~ vn # .")
+
 
 app = Flask(__name__)
 
 @app.route('/expand', methods=["POST"])
 def service():
     content = request.json['mytext']
-    result = evaluate(content)
-    expand = result[0]
-    score = result[1].item()
-    time = result[2]
-    out = {"expand": expand, "score": score,"time": time}
-    return jsonify(out)
+    result = expand(content)
+    return jsonify(result)
 
 #app.run('0.0.0.0', port=5050)
