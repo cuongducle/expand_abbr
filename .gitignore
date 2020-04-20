@@ -1,0 +1,12 @@
+__pycache__/
+agents/
+modelVersions/
+.idea
+*.pyc
+config/config.py
+*.pid
+*.log
+*.swp
+.vscode/
+300000_checkpoint.tar
+
