@@ -120,11 +120,11 @@ def expand(sentence):
     sen,abbr,and_pos = clean_abbr(sentence)
     expand = ''
     if len(dic[abbr]) == 0:
-        return {"expand": "null", "score": -1,"time": 0}
+        return "null",-1
     if len(dic[abbr]) == 1:
         expand = dic[abbr][0]
         expand = insert_va(expand,and_pos)
-        return {"expand": expand, "score": 0,"time": 0}
+        return expand,0
     if len(dic[abbr]) >= 2:
         pred,score,time = evaluate(sen)
         for item in dic[abbr]:
@@ -133,7 +133,7 @@ def expand(sentence):
         if expand == '':
             expand = pred
         expand = insert_va(expand,and_pos)
-        return {"expand": expand, "score": score.item(),"time": time}
+        return expand,score.item()
 
 # print(expand('cô giáo tôi là ~ th.s #'))
 
