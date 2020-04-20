@@ -133,7 +133,7 @@ def expand(sentence):
                 expand = item
                 tmp = levenshtein(item,pred)
         if tmp > 2:
-            expand = pred
+            expand = "n
         expand = insert_va(expand,and_pos)
         return expand,score.item()
 
