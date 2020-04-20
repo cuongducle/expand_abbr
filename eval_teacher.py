@@ -127,10 +127,12 @@ def expand(sentence):
         return expand,0
     if len(dic[abbr]) >= 2:
         pred,score,time = evaluate(sen)
+        tmp = len(pred)
         for item in dic[abbr]:
-            if levenshtein(item,pred) <=2:
+            if levenshtein(item,pred) < tmp:
                 expand = item
-        if expand == '':
+                tmp = levenshtein(item,pred)
+        if tmp > 2:
             expand = pred
         expand = insert_va(expand,and_pos)
         return expand,score.item()
